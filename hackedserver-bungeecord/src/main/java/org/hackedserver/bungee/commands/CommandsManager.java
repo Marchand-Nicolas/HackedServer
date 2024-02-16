@@ -40,6 +40,7 @@ public class CommandsManager extends Command {
             case "reload":
                 ConfigsManager.reload(logger, dataFolder);
                 Message.COMMANDS_RELOAD_SUCCESS.send(audience);
+                server.getPlayers().forEach(player -> HackedServer.registerPlayer(player.getUniqueId(), new HackedPlayer(player.getUniqueId())));
                 break;
 
             case "check":
@@ -60,7 +61,7 @@ public class CommandsManager extends Command {
                                     Placeholder.parsed("mod", HackedServer.getCheck(checkId).getName()));
                         }
                     }
-                } catch (Exception exception) {
+                } catch (Exception ignored) {
 
                 }
                 break;

@@ -52,6 +52,7 @@ public class CommandsManager {
                 .executes((sender, args) -> {
                     ConfigsManager.reload(Logs.getLogger(), plugin.getDataFolder());
                     Message.COMMANDS_RELOAD_SUCCESS.send(audiences.sender(sender));
+                    Bukkit.getServer().getOnlinePlayers().forEach(player -> HackedServer.registerPlayer(player.getUniqueId(), new HackedPlayer(player.getUniqueId())));
                 });
     }
 
