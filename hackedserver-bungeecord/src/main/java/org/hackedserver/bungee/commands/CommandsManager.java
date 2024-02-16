@@ -45,6 +45,11 @@ public class CommandsManager extends Command {
             case "check":
                 try {
                     ProxiedPlayer player = server.getPlayer(args[1]);
+                    // If no player is found
+                    if (player == null) {
+                        Message.PLAYER_NOT_FOUND.send(audience);
+                        return;
+                    }
                     HackedPlayer hackedPlayer = HackedServer.getPlayer(player.getUniqueId());
                     if (hackedPlayer.getGenericChecks().isEmpty())
                         Message.CHECK_NO_MODS.send(audience);

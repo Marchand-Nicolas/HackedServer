@@ -52,6 +52,11 @@ public class CommandsManager {
                 .withArguments(new PlayerArgument("player"))
                 .executes((sender, args) -> {
                     HackedPlayer hackedPlayer = HackedServer.getPlayer(((Player) args.get("player")).getUniqueId());
+                    // If no player is found
+                    if (hackedPlayer == null) {
+                        Message.PLAYER_NOT_FOUND.send(audiences.sender(sender));
+                        return;
+                    }
                     if (hackedPlayer.getGenericChecks().isEmpty())
                         Message.CHECK_NO_MODS.send(audiences.sender(sender));
                     else {

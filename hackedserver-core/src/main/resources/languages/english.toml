@@ -12,9 +12,10 @@ help = """
 <hover:show_text:\"<gray>fill give command\"><click:SUGGEST_COMMAND:/hackedserver check ><#6f737d>/hs \
 <#b8bbc2>check <#43c9fa>target</click></hover>  <#6f737d>»<#b8bbc2> check player detected mods<reset> \
 """
-reload_success = "<prefix><#55ffa4>Successfully reloaded"
+reload_success = "<prefix><#55ffa4> Successfully reloaded"
 check_no_mods = "<prefix><#55ffa4> No mods detected"
 check_mods = "<prefix><#55ffa4> Detected mods:"
 mod_list_format = "<#6f737d>- <#facc43><mod>"
 check_players = "<prefix><#55ffa4> Spotted players:"
 player_list_format = "<#6f737d>- <#facc43><player>"
+player_not_found = "<prefix><#fa3434> Player not found"
