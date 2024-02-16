@@ -5,15 +5,22 @@ import dev.jorel.commandapi.arguments.PlayerArgument;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.hackedserver.core.HackedPlayer;
 import org.hackedserver.core.HackedServer;
 import org.hackedserver.core.config.ConfigsManager;
+import org.hackedserver.core.config.GenericCheck;
 import org.hackedserver.core.config.Message;
+import org.hackedserver.spigot.HackedHolder;
 import org.hackedserver.spigot.utils.logs.Logs;
 
-import java.util.Objects;
+import java.util.*;
 
 public class CommandsManager {
 
@@ -31,6 +38,8 @@ public class CommandsManager {
                 .withPermission("hackedserver.command")
                 .withSubcommand(getReloadCommand())
                 .withSubcommand(getCheckCommand())
+                .withSubcommand(getListCommand())
+                .withSubcommand(getInvCommand())
                 .executes((sender, args) -> {
                     Message.COMMANDS_HELP.send(audiences.sender(sender));
                 })
@@ -51,8 +60,12 @@ public class CommandsManager {
                 .withPermission("hackedserver.command.check")
                 .withArguments(new PlayerArgument("player"))
                 .executes((sender, args) -> {
-                    HackedPlayer hackedPlayer = HackedServer.getPlayer(((Player) args.get("player")).getUniqueId());
-                    // If no player is found
+                    Player player = (Player) args.get("player");
+                    if (player == null) {
+                        Message.PLAYER_NOT_FOUND.send(audiences.sender(sender));
+                        return;
+                    }
+                    HackedPlayer hackedPlayer = HackedServer.getPlayer(player.getUniqueId());
                     if (hackedPlayer == null) {
                         Message.PLAYER_NOT_FOUND.send(audiences.sender(sender));
                         return;
@@ -81,4 +94,42 @@ public class CommandsManager {
                 });
     }
 
+    private CommandAPICommand getInvCommand() {
+        return new CommandAPICommand("inv")
+                .withPermission("hackedserver.command.inv")
+                .executesPlayer((player, args) -> {
+                    Inventory inv = Bukkit.createInventory(new HackedHolder(player), 9, "HackedServer");
+                    HackedServer.getPlayers().forEach(hackedPlayer -> {
+                        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+                        SkullMeta meta = (SkullMeta) head.getItemMeta();
+                        assert meta != null;
+                        meta.setOwningPlayer(Bukkit.getOfflinePlayer(hackedPlayer.getUuid()));
+                        meta.setDisplayName(Bukkit.getOfflinePlayer(hackedPlayer.getUuid()).getName());
+
+                        List<String> lore = new ArrayList<>();
+                        List<GenericCheck> sortedChecks = new ArrayList<>(HackedServer.getChecks().stream().sorted(Comparator.comparing(GenericCheck::getName)).toList());
+                        sortedChecks.remove(HackedServer.getCheck("fabric"));
+                        sortedChecks.remove(HackedServer.getCheck("forge"));
+
+                        lore.add(ChatColor.GOLD + "Fabric: " + (hackedPlayer.getGenericChecks().contains("fabric") ? ChatColor.GREEN + "true" : ChatColor.RED + "false"));
+                        lore.add(ChatColor.GOLD + "Forge: " + (hackedPlayer.getGenericChecks().contains("forge") ? ChatColor.GREEN + "true" : ChatColor.RED + "false"));
+                        lore.add(ChatColor.BLUE + "--------------------");
+
+                        for (GenericCheck check : sortedChecks.stream().filter(check -> hackedPlayer.getGenericChecks().contains(check.getId())).toList()) {
+                            lore.add(ChatColor.GOLD + check.getName() + ": " + ChatColor.GREEN + "true");
+                            sortedChecks.remove(check);
+                        }
+
+                        for (GenericCheck check : sortedChecks.stream().filter(check -> !hackedPlayer.getGenericChecks().contains(check.getId())).toList()) {
+                            lore.add(ChatColor.GOLD + check.getName() + ": " + ChatColor.RED + "false");
+                        }
+                        meta.setLore(lore);
+                        head.setItemMeta(meta);
+                        inv.addItem(head);
+                    });
+                    player.openInventory(inv);
+                });
+    }
+
 }
+
