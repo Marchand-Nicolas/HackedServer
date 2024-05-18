@@ -13,12 +13,14 @@ import org.hackedserver.core.config.Message;
 import org.hackedserver.spigot.commands.CommandsManager;
 import org.hackedserver.spigot.listeners.CustomPayloadListener;
 import org.hackedserver.spigot.listeners.HackedPlayerListeners;
+import org.hackedserver.spigot.listeners.HandShakeListener;
 import org.hackedserver.spigot.utils.logs.Logs;
 
 public class HackedServerPlugin extends JavaPlugin {
 
     private ProtocolManager protocolManager;
     private CustomPayloadListener customPayloadListener;
+    private HandShakeListener handShakeListener;
     private BukkitAudiences audiences;
     private static HackedServerPlugin instance;
 
@@ -43,6 +45,8 @@ public class HackedServerPlugin extends JavaPlugin {
         protocolManager = ProtocolLibrary.getProtocolManager();
         customPayloadListener = new CustomPayloadListener(protocolManager, this);
         customPayloadListener.register();
+        handShakeListener = new HandShakeListener(protocolManager, this);
+        handShakeListener.register();
         new CommandsManager(this, audiences).loadCommands();
         Logs.logComponent(Message.PLUGIN_LOADED.toComponent());
     }
@@ -50,6 +54,7 @@ public class HackedServerPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         customPayloadListener.unregister();
+        handShakeListener.unregister();
     }
 
     public BukkitAudiences getAudiences() {

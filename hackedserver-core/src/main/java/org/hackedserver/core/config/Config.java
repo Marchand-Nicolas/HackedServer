@@ -28,8 +28,7 @@ public enum Config {
     }
 
     public boolean toBool() {
-        return
-                Boolean.TRUE.equals(result.getBoolean(path));
+        return Boolean.TRUE.equals(result.getBoolean(path));
     }
 
 }

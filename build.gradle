@@ -1,17 +1,18 @@
 import java.text.SimpleDateFormat
 
 plugins {
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
-def pluginVersion = '3.1.1'
+def pluginVersion = '3.2.1'
 
 allprojects {
-
     apply plugin: 'idea'
     apply plugin: 'java'
     apply plugin: 'com.github.johnrengelman.shadow'
-
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+    }
     group 'org.hackedserver'
 
     tasks.withType(JavaCompile).tap {
@@ -47,7 +48,7 @@ allprojects {
 project(':hackedserver-core') {
 
     dependencies {
-        implementation group: 'net.kyori', name: 'adventure-text-minimessage', version: '4.13.0-SNAPSHOT'
+        implementation group: 'net.kyori', name: 'adventure-text-minimessage', version: '4.14.0-SNAPSHOT'
 
         implementation group: 'io.github.xtomlj', name: 'xtomlj', version: '1.1.0'
     }
@@ -57,15 +58,15 @@ project(':hackedserver-core') {
 project(':hackedserver-spigot') {
 
     dependencies {
-        compileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.20.1-R0.1-SNAPSHOT'
-        compileOnly group: 'com.comphenix.protocol', name: 'ProtocolLib', version: '5.0.0-SNAPSHOT'
-        compileOnly group: 'net.kyori', name: 'adventure-text-minimessage', version: '4.14.0'
-        compileOnly group: 'io.netty', name: 'netty-all', version: '4.1.68.Final'
+        compileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.20.4-R0.1-SNAPSHOT'
+        compileOnly group: 'com.comphenix.protocol', name: 'ProtocolLib', version: '5.2.0-SNAPSHOT'
+        compileOnly group: 'net.kyori', name: 'adventure-text-minimessage', version: '4.17.0'
+        compileOnly group: 'io.netty', name: 'netty-all', version: '4.1.109.Final'
         compileOnly project(path: ':hackedserver-core', configuration: 'shadow')
 
-        implementation group: 'dev.jorel', name: 'commandapi-bukkit-shade', version: '9.0.3'
-        implementation group: 'net.kyori', name: 'adventure-platform-bukkit', version: '4.3.0'
-        implementation group: 'org.bstats', name: 'bstats-bukkit', version: '3.0.0'
+        implementation group: 'dev.jorel', name: 'commandapi-bukkit-shade', version: '9.4.1'
+        implementation group: 'net.kyori', name: 'adventure-platform-bukkit', version: '4.3.2'
+        implementation group: 'org.bstats', name: 'bstats-bukkit', version: '3.0.2'
     }
 
 }
@@ -77,12 +78,12 @@ project(':hackedserver-bungeecord') {
     }
 
     dependencies {
-        compileOnly group: 'net.md-5', name: 'bungeecord-api', version: '1.19-R0.1-SNAPSHOT'
-        compileOnly group: 'net.kyori', name: 'adventure-text-minimessage', version: '4.14.0'
+        compileOnly group: 'net.md-5', name: 'bungeecord-api', version: '1.20-R0.1-SNAPSHOT'
+        compileOnly group: 'net.kyori', name: 'adventure-text-minimessage', version: '4.17.0'
         compileOnly project(path: ':hackedserver-core', configuration: 'shadow')
 
-        implementation group: 'net.kyori', name: 'adventure-platform-bungeecord', version: '4.3.0'
-        implementation group: 'org.bstats', name: 'bstats-bungeecord', version: '2.2.1'
+        implementation group: 'net.kyori', name: 'adventure-platform-bungeecord', version: '4.3.2'
+        implementation group: 'org.bstats', name: 'bstats-bungeecord', version: '3.0.2'
     }
 
 }

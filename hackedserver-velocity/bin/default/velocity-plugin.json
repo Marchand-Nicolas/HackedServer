@@ -1,0 +1,1 @@
+{"id":"hackedserver","name":"HackedServer","version":"${projectVersion}","description":"Detect forge, fabric, alert your staff and punish cheaters automatically","url":"https://hackedserver.org/","authors":["Th0rgal"],"dependencies":[],"main":"org.hackedserver.velocity.HackedServerPlugin"}

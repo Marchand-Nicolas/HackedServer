@@ -38,7 +38,6 @@ public class CommandsManager {
                 .withPermission("hackedserver.command")
                 .withSubcommand(getReloadCommand())
                 .withSubcommand(getCheckCommand())
-                .withSubcommand(getListCommand())
                 .withSubcommand(getInvCommand())
                 .executes((sender, args) -> {
                     Message.COMMANDS_HELP.send(audiences.sender(sender));
@@ -52,7 +51,8 @@ public class CommandsManager {
                 .executes((sender, args) -> {
                     ConfigsManager.reload(Logs.getLogger(), plugin.getDataFolder());
                     Message.COMMANDS_RELOAD_SUCCESS.send(audiences.sender(sender));
-                    Bukkit.getServer().getOnlinePlayers().forEach(player -> HackedServer.registerPlayer(player.getUniqueId(), new HackedPlayer(player.getUniqueId())));
+                    Bukkit.getServer().getOnlinePlayers().forEach(player -> HackedServer
+                            .registerPlayer(player.getUniqueId(), new HackedPlayer(player.getUniqueId())));
                 });
     }
 
@@ -75,23 +75,10 @@ public class CommandsManager {
                         Message.CHECK_NO_MODS.send(audiences.sender(sender));
                     else {
                         Message.CHECK_MODS.send(audiences.sender(sender));
-                        hackedPlayer.getGenericChecks().forEach(checkId ->
-                                Message.MOD_LIST_FORMAT.send(audiences.sender(sender),
+                        hackedPlayer.getGenericChecks()
+                                .forEach(checkId -> Message.MOD_LIST_FORMAT.send(audiences.sender(sender),
                                         Placeholder.parsed("mod", HackedServer.getCheck(checkId).getName())));
                     }
-                });
-    }
-
-    private CommandAPICommand getListCommand() {
-        return new CommandAPICommand("list")
-                .withPermission("hackedserver.command.list")
-                .executes((sender, args) -> {
-                    Message.CHECK_PLAYERS.send(audiences.sender(sender));
-                    HackedServer.getPlayers().forEach(hackedPlayer ->
-                            Message.PLAYER_LIST_FORMAT.send(audiences.sender(sender),
-                                    Placeholder.parsed("player",
-                                            Objects.requireNonNull(
-                                                    Bukkit.getOfflinePlayer(hackedPlayer.getUuid()).getName()))));
                 });
     }
 
@@ -108,22 +95,32 @@ public class CommandsManager {
                         meta.setDisplayName(Bukkit.getOfflinePlayer(hackedPlayer.getUuid()).getName());
 
                         List<String> lore = new ArrayList<>();
-                        List<GenericCheck> sortedChecks = new ArrayList<>(HackedServer.getChecks().stream().sorted(Comparator.comparing(GenericCheck::getName)).toList());
+                        List<GenericCheck> sortedChecks = new ArrayList<>(HackedServer.getChecks().stream()
+                                .sorted(Comparator.comparing(GenericCheck::getName)).toList());
                         sortedChecks.remove(HackedServer.getCheck("fabric"));
                         sortedChecks.remove(HackedServer.getCheck("forge"));
 
-                        lore.add(ChatColor.GOLD + "Fabric: " + (hackedPlayer.getGenericChecks().contains("fabric") ? ChatColor.GREEN + "true" : ChatColor.RED + "false"));
-                        lore.add(ChatColor.GOLD + "Forge: " + (hackedPlayer.getGenericChecks().contains("forge") ? ChatColor.GREEN + "true" : ChatColor.RED + "false"));
+                        lore.add(ChatColor.GOLD + "Fabric: "
+                                + (hackedPlayer.getGenericChecks().contains("fabric") ? ChatColor.GREEN + "true"
+                                        : ChatColor.RED + "false"));
+                        lore.add(ChatColor.GOLD + "Forge: "
+                                + (hackedPlayer.getGenericChecks().contains("forge") ? ChatColor.GREEN + "true"
+                                        : ChatColor.RED + "false"));
                         lore.add(ChatColor.BLUE + "--------------------");
 
-                        for (GenericCheck check : sortedChecks.stream().filter(check -> hackedPlayer.getGenericChecks().contains(check.getId())).toList()) {
+                        List<GenericCheck> trueChecks = sortedChecks.stream()
+                                .filter(check -> hackedPlayer.getGenericChecks().contains(check.getId())).toList();
+                        for (GenericCheck check : trueChecks) {
                             lore.add(ChatColor.GOLD + check.getName() + ": " + ChatColor.GREEN + "true");
                             sortedChecks.remove(check);
                         }
 
-                        for (GenericCheck check : sortedChecks.stream().filter(check -> !hackedPlayer.getGenericChecks().contains(check.getId())).toList()) {
-                            lore.add(ChatColor.GOLD + check.getName() + ": " + ChatColor.RED + "false");
-                        }
+                        if (!trueChecks.isEmpty())
+                            lore.add(ChatColor.BLUE + "--------------------");
+
+                        lore.add(ChatColor.WHITE + "Click for full checks for "
+                                + Bukkit.getOfflinePlayer(hackedPlayer.getUuid()).getName());
+
                         meta.setLore(lore);
                         head.setItemMeta(meta);
                         inv.addItem(head);
@@ -133,4 +130,3 @@ public class CommandsManager {
     }
 
 }
-

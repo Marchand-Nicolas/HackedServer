@@ -26,9 +26,18 @@ public class GenericCheck {
         return name;
     }
 
+    public String getMessageHas() {
+        return messageHas;
+    }
+
     public boolean pass(String channel, String message) {
-        return this.channels.contains(channel)
-                && (messageHas == null || message.toLowerCase().contains(messageHas.toLowerCase()));
+        return this.channels.contains(channel) && (messageHas == null
+                || message.toLowerCase().contains(messageHas.toLowerCase()));
+    }
+
+    public boolean softPass(String message) {
+        return (messageHas != null
+                && message.toLowerCase().contains(messageHas.toLowerCase()));
     }
 
     public List<Action> getActions() {
